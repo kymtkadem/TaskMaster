@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - TaskMaster</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for beautiful graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="light-mode">
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-layer-group"></i> TaskMaster
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Tasks</a></li>
+            <li><a href="progress.html" class="active">Progress</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="#" id="logout-btn" style="color: #ef4444; border: 1px solid #ef4444; padding: 0.3rem 1rem; border-radius: 20px;"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
+        </ul>
+        <button id="theme-toggle" aria-label="Toggle Dark Mode">
+            <i class="fas fa-moon"></i>
+        </button>
+    </nav>
+
+    <main class="container" style="max-width: 1200px; margin-top: 0.5rem; margin-bottom: 0.5rem; padding: 1rem 2.5rem;">
+        <header style="margin-bottom: 1rem;">
+            <h1 style="font-size: 1.6rem; margin-bottom: 0;">Your Progress</h1>
+            <p style="font-size: 0.85rem; margin-bottom: 0;">Track your productivity and task completion history.</p>
+        </header>
+
+        <div style="display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: stretch; height: calc(100vh - 180px); max-height: 420px;">
+            <!-- Left Panel: Stats -->
+            <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                <div class="card" style="text-align: center; padding: 0.8rem; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                    <h3 style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 0.2rem;">Total Tasks</h3>
+                    <p id="stat-total" style="font-size: 2rem; font-weight: 800; margin: 0; background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">0</p>
+                </div>
+                <div class="card" style="text-align: center; padding: 0.8rem; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                    <h3 style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 0.2rem;">Completed</h3>
+                    <p id="stat-completed" style="font-size: 2rem; font-weight: 800; margin: 0; color: #10b981;">0</p>
+                </div>
+                <div class="card" style="text-align: center; padding: 0.8rem; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                    <h3 style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 0.2rem;">Success Rate</h3>
+                    <p id="stat-rate" style="font-size: 2rem; font-weight: 800; margin: 0; color: #8b5cf6;">0%</p>
+                </div>
+            </div>
+
+            <!-- Right Panel: Chart -->
+            <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; padding: 1rem;">
+                <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Task Overview</h2>
+                <div style="width: 100%; max-width: 280px; flex: 1; display: flex; justify-content: center; align-items: center;">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        // Custom logic specifically for generating the graphs based on local tasks
+        document.addEventListener('DOMContentLoaded', () => {
+            const rawTasks = localStorage.getItem('tasks');
+            const tasks = rawTasks ? JSON.parse(rawTasks) : [];
+            
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(t => t.completed).length;
+            const incompleteTasks = totalTasks - completedTasks;
+            
+            const rate = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+            // Update simple DOM stat numbers
+            document.getElementById('stat-total').innerText = totalTasks;
+            document.getElementById('stat-completed').innerText = completedTasks;
+            document.getElementById('stat-rate').innerText = rate + '%';
+
+            // Check Theme for Chart aesthetics 
+            const isDark = document.body.classList.contains('dark-mode');
+            const textColor = isDark ? '#f8fafc' : '#1e293b';
+
+            // Draw Chart.js Pie Chart
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Incomplete'],
+                    datasets: [{
+                        data: [completedTasks, incompleteTasks],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.8)', // Success Green
+                            'rgba(239, 68, 68, 0.8)'   // Danger Red
+                        ],
+                        borderColor: [
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(239, 68, 68, 1)'
+                        ],
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: textColor,
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 14
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        });
+    </script>
+</body>
+</html>
