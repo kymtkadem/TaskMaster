@@ -3,118 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Badges - TaskMaster</title>
+    <title>30 Achievements - TaskMaster</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         .badges-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 1.2rem;
+            margin-top: 1.5rem;
         }
         .badge-card {
             background: var(--item-bg);
             border: 1px solid var(--card-border);
             border-radius: 20px;
-            padding: 1.5rem;
+            padding: 1.5rem 0.6rem;
             text-align: center;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
-            opacity: 0.5;
+            opacity: 0.3;
             filter: grayscale(1);
+            --badge-clr: #94a3b8;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         .badge-card.earned {
             opacity: 1;
             filter: grayscale(0);
-            border-color: #f59e0b;
-            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.15);
-            background: linear-gradient(135deg, var(--item-bg) 0%, rgba(245, 158, 11, 0.05) 100%);
+            border-color: var(--badge-clr);
+            box-shadow: 0 8px 24px rgba(var(--badge-clr-rgb), 0.15);
+            background: linear-gradient(135deg, var(--item-bg) 0%, rgba(var(--badge-clr-rgb), 0.08) 100%);
         }
         .badge-card.earned:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(245, 158, 11, 0.25);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(var(--badge-clr-rgb), 0.3);
+            background: linear-gradient(135deg, var(--item-bg) 0%, rgba(var(--badge-clr-rgb), 0.12) 100%);
         }
         .badge-icon {
             font-size: 2.5rem;
             margin-bottom: 0.8rem;
             display: block;
+            color: var(--badge-clr);
             transition: transform 0.3s ease;
         }
+        .badge-card.earned:hover .badge-icon {
+            transform: scale(1.2);
+        }
         .badge-card.earned .badge-icon {
-            color: #f59e0b;
-            text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+            filter: drop-shadow(0 0 12px rgba(var(--badge-clr-rgb), 0.6));
         }
         .badge-name {
-            font-weight: 700;
-            font-size: 0.95rem;
+            font-weight: 800;
+            font-size: 0.85rem;
             display: block;
             margin-bottom: 0.3rem;
             color: var(--text-primary);
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .badge-desc {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             color: var(--text-secondary);
             line-height: 1.3;
-        }
-        
-        /* Modal for Badge Earned */
-        #badge-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid #f59e0b;
-            padding: 3rem;
-            border-radius: 30px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 50px rgba(245, 158, 11, 0.3);
-            transform: scale(0.8);
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes popIn { 
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .modal-icon {
-            font-size: 5rem;
-            color: #f59e0b;
-            margin-bottom: 1.5rem;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        .close-modal {
-            margin-top: 2rem;
-            padding: 0.8rem 2rem;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
+            display: block;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -127,32 +86,27 @@
             <li><a href="index.html">Tasks</a></li>
             <li><a href="progress.html">Progress</a></li>
             <li><a href="badges.html" class="active">Badges</a></li>
-            <li><a href="#" id="logout-btn" style="color: #ef4444; border: 1px solid #ef4444; padding: 0.3rem 1rem; border-radius: 20px;"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
         </ul>
-        <button id="theme-toggle" aria-label="Toggle Dark Mode">
-            <i class="fas fa-moon"></i>
-        </button>
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <button id="theme-toggle" title="Toggle Theme">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button id="logout-btn" class="logout-btn" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.5rem 1.2rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-sign-out-alt"></i> Log Out
+            </button>
+        </div>
     </nav>
 
-    <main class="container" style="max-width: 1000px;">
-        <header style="margin-bottom: 2rem;">
-            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Your Achievements</h1>
-            <p style="font-size: 1rem; color: var(--text-secondary);">Complete tasks and maintain streaks to unlock exclusive badges.</p>
+    <main class="dashboard-layout" style="max-width: 1600px; margin: 1.5rem auto; padding: 0 2.5rem;">
+        <header style="margin-bottom: 2rem; text-align: left;">
+            <h1 style="font-family: 'Outfit', sans-serif; font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">Achievement Hall</h1>
+            <p style="color: var(--text-secondary); opacity: 0.8; font-size: 1rem;">The definitive collection of your 30 unique achievements.</p>
         </header>
 
         <div class="badges-grid" id="badges-container">
-            <!-- Badges will be generated by JS -->
+            <!-- Injected by JS -->
         </div>
     </main>
-
-    <div id="badge-modal">
-        <div class="modal-content">
-            <div class="modal-icon"><i class="fas fa-medal"></i></div>
-            <h2 id="modal-badge-name" style="font-size: 1.8rem; margin-bottom: 0.5rem;">New Badge Earned!</h2>
-            <p id="modal-badge-desc" style="color: var(--text-secondary); margin-bottom: 1rem;">Congratulations on your achievement!</p>
-            <button class="close-modal" id="close-modal-btn">Awesome!</button>
-        </div>
-    </div>
 
     <script type="module" src="script.js"></script>
     <script type="module">
@@ -161,46 +115,52 @@
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
         const badgeData = [
-            { id: 't1', icon: 'fa-seedling', name: 'First Steps', req: 'Complete 1 task' },
-            { id: 't5', icon: 'fa-leaf', name: 'Productive', req: 'Complete 5 tasks' },
-            { id: 't10', icon: 'fa-briefcase', name: 'Busy Bee', req: 'Complete 10 tasks' },
-            { id: 't20', icon: 'fa-rocket', name: 'Task Master', req: 'Complete 20 tasks' },
-            { id: 't50', icon: 'fa-trophy', name: 'Overachiever', req: 'Complete 50 tasks' },
-            { id: 'tl', icon: 'fa-crown', name: 'Task Legend', req: 'Complete 100 tasks' },
-            { id: 'eb', icon: 'fa-sun', name: 'Early Bird', req: 'Task before 8 AM' },
-            { id: 'no', icon: 'fa-moon', name: 'Night Owl', req: 'Task after 10 PM' },
-            { id: 'sr', icon: 'fa-bolt', name: 'Speed Runner', req: 'Fast completion' },
-            { id: 'f5', icon: 'fa-star', name: 'Focused', req: '5 tasks in 1 day' },
-            { id: 'm10', icon: 'fa-fire-alt', name: 'Marathon', req: '10 tasks in 1 day' },
-            { id: 'cs', icon: 'fa-broom', name: 'Clean Slate', req: 'Zero pending' },
-            { id: 'ta', icon: 'fa-drafting-table', name: 'Architect', req: '50 total tasks' },
-            { id: 'arc', icon: 'fa-archive', name: 'Archivist', req: '200 total tasks' },
-            { id: 'com', icon: 'fa-check-double', name: 'Completionist', req: 'All tasks done' },
-            
-            { id: 's2', icon: 'fa-running', name: 'Nice Start', req: '2 day streak' },
-            { id: 's3', icon: 'fa-shoe-prints', name: 'Hattrick', req: '3 day streak' },
-            { id: 's7', icon: 'fa-calendar-week', name: 'Warrior', req: '7 day streak' },
-            { id: 's14', icon: 'fa-shield-alt', name: 'Fortnight', req: '14 day streak' },
-            { id: 's21', icon: 'fa-mountain', name: 'Consistent', req: '21 day streak' },
-            { id: 's30', icon: 'fa-medal', name: 'Monthly Medal', req: '30 day streak' },
-            { id: 's60', icon: 'fa-gem', name: 'Unstoppable', req: '60 day streak' },
-            { id: 's90', icon: 'fa-dragon', name: 'Seasoned', req: '90 day streak' },
-            { id: 's100', icon: 'fa-hundred-points', name: 'Centurion', req: '100 day streak' },
-            { id: 's365', icon: 'fa-birthday-cake', name: 'Yearling', req: '365 day streak' },
-            
-            { id: 'dm', icon: 'fa-adjust', name: 'Night Light', req: 'Dark mode' },
-            { id: 'ex', icon: 'fa-map-marked-alt', name: 'Explorer', req: 'Visit all pages' },
-            { id: 'cu', icon: 'fa-calendar-plus', name: 'Customizer', req: 'Set 5 due dates' },
-            { id: 'pu', icon: 'fa-clock', name: 'Punctual', req: '5 early tasks' },
-            { id: 'dd', icon: 'fa-bullseye', name: 'Deadline Dodger', req: 'Perfect timing' }
+            // Tasks (8)
+            { id: 't1', icon: 'fa-seedling', name: 'First Steps', req: '1 Task', clr: '#fbbf24', rgb: '251, 191, 36' },
+            { id: 't5', icon: 'fa-leaf', name: 'Productive', req: '5 Tasks', clr: '#10b981', rgb: '16, 185, 129' },
+            { id: 't10', icon: 'fa-briefcase', name: 'Busy Bee', req: '10 Tasks', clr: '#3b82f6', rgb: '59, 130, 246' },
+            { id: 't20', icon: 'fa-rocket', name: 'Task Master', req: '20 Tasks', clr: '#8b5cf6', rgb: '139, 92, 246' },
+            { id: 't50', icon: 'fa-trophy', name: 'Overachiever', req: '50 Tasks', clr: '#f59e0b', rgb: '245, 158, 11' },
+            { id: 'tl', icon: 'fa-crown', name: 'Legend', req: '100 Tasks', clr: '#d946ef', rgb: '217, 70, 239' },
+            { id: 'tt', icon: 'fa-gem', name: 'Titan', req: '500 Tasks', clr: '#06b6d4', rgb: '6, 182, 212' },
+            { id: 'tg', icon: 'fa-infinity', name: 'God Mode', req: '1000 Tasks', clr: '#000000', rgb: '0, 0, 0' },
+
+            // Streaks (8)
+            { id: 's2', icon: 'fa-running', name: 'Nice Start', req: '2 Days', clr: '#f97316', rgb: '249, 115, 22' },
+            { id: 's3', icon: 'fa-shoe-prints', name: 'Hattrick', req: '3 Days', clr: '#0ea5e9', rgb: '14, 165, 233' },
+            { id: 's7', icon: 'fa-calendar-week', name: 'Warrior', req: '7 Days', clr: '#ef4444', rgb: '239, 68, 68' },
+            { id: 's14', icon: 'fa-shield-alt', name: 'Fortnight', req: '14 Days', clr: '#6366f1', rgb: '99, 102, 241' },
+            { id: 's21', icon: 'fa-mountain', name: 'Consistent', req: '21 Days', clr: '#14b8a6', rgb: '20, 184, 166' },
+            { id: 's30', icon: 'fa-medal', name: 'Monthly', req: '30 Days', clr: '#a855f7', rgb: '168, 85, 247' },
+            { id: 's50', icon: 'fa-fire', name: '50 Streak', req: '50 Days', clr: '#dc2626', rgb: '220, 38, 38' },
+            { id: 's100', icon: 'fa-dragon', name: 'Centurion', req: '100 Days', clr: '#7c2d12', rgb: '124, 45, 18' },
+
+            // Speed & Skill (7)
+            { id: 'f5', icon: 'fa-star', name: 'Focused', req: '5/Day', clr: '#ec4899', rgb: '236, 72, 153' },
+            { id: 'f10', icon: 'fa-bolt', name: 'Unstoppable', req: '10/Day', clr: '#22c55e', rgb: '34, 197, 94' },
+            { id: 'f20', icon: 'fa-skull', name: 'Beast Mode', req: '20/Day', clr: '#450a0a', rgb: '69, 10, 10' },
+            { id: 'eb', icon: 'fa-sun', name: 'Early Bird', req: 'Before 8AM', clr: '#fcd34d', rgb: '252, 211, 77' },
+            { id: 'no', icon: 'fa-moon', name: 'Night Owl', req: 'After 10PM', clr: '#1e1b4b', rgb: '30, 27, 75' },
+            { id: 'qu', icon: 'fa-stopwatch', name: 'Speed Demon', req: 'Quick', clr: '#71717a', rgb: '113, 113, 122' },
+            { id: 'da', icon: 'fa-bullseye', name: 'Deadline Ace', req: 'Ontime', clr: '#1d4ed8', rgb: '29, 78, 216' },
+
+            // Explorer (7)
+            { id: 'ex', icon: 'fa-compass', name: 'Explorer', req: 'Pages', clr: '#475569', rgb: '71, 85, 105' },
+            { id: 'cs', icon: 'fa-broom', name: 'Clean Slate', req: 'Zero Pend', clr: '#059669', rgb: '5, 150, 105' },
+            { id: 'ar', icon: 'fa-box-open', name: 'Archivist', req: '200 Done', clr: '#92400e', rgb: '146, 64, 14' },
+            { id: 'pm', icon: 'fa-brain', name: 'Pro Master', req: '90% Rate', clr: '#4f46e5', rgb: '79, 70, 229' },
+            { id: 'fe', icon: 'fa-magic', name: 'Feature Pro', req: 'Settings', clr: '#db2777', rgb: '219, 39, 119' },
+            { id: 'lo', icon: 'fa-heart', name: 'Loyalty', req: '7 Days Act', clr: '#be123c', rgb: '190, 18, 60' },
+            { id: 'nm', icon: 'fa-user-plus', name: 'New Me', req: 'Start', clr: '#0891b2', rgb: '8, 145, 178' }
         ];
 
         const container = document.getElementById('badges-container');
-        
         badgeData.forEach(b => {
             const card = document.createElement('div');
             card.className = 'badge-card';
             card.id = `badge-${b.id}`;
+            card.style.setProperty('--badge-clr', b.clr);
+            card.style.setProperty('--badge-clr-rgb', b.rgb);
             card.innerHTML = `
                 <i class="fas ${b.icon} badge-icon"></i>
                 <span class="badge-name">${b.name}</span>
@@ -222,12 +182,6 @@
                 });
             }
         });
-
-        // Close Modal Logic (handles queueing if called from script.js)
-        document.getElementById('close-modal-btn').onclick = () => {
-             document.getElementById('badge-modal').style.display = 'none';
-             window.dispatchEvent(new CustomEvent('badgeModalClosed'));
-        };
     </script>
 </body>
 </html>

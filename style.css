@@ -191,9 +191,9 @@ body::after {
 
 /* ===== Main Container (Glassmorphism) ===== */
 .container {
-    max-width: 800px;
-    margin: 3rem auto;
-    padding: 2.5rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 2rem;
     background: var(--card-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
