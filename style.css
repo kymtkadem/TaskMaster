@@ -141,9 +141,10 @@ body::after {
     text-decoration: none;
     color: var(--text-secondary);
     font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
     position: relative;
+    padding-bottom: 2px;
 }
 
 .nav-links a::after {
@@ -223,30 +224,67 @@ header p {
 /* ===== Task Input Section ===== */
 #task-form {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    position: relative;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 0;
+    width: 100%;
 }
 
-#task-input, #task-datetime {
-    flex: 1;
-    min-width: 200px;
-    padding: 1.2rem 1.5rem;
+.input-group {
+    position: relative;
+    width: 100%;
+}
+
+.input-group i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    pointer-events: none;
+    transition: color 0.3s ease;
+}
+
+#task-input, #task-date, #task-time, #task-datetime {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.8rem !important;
     border: 1px solid var(--card-border);
     border-radius: 12px;
     background: var(--input-bg);
     color: var(--text-primary);
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     transition: all 0.3s ease;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    box-sizing: border-box;
 }
 
-#task-input:focus, #task-datetime:focus {
+#task-input:focus, #task-date:focus, #task-time:focus, #task-datetime:focus {
     outline: none;
     border-color: #6366f1;
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
     background: var(--card-bg);
+}
+
+.input-group:focus-within i {
+    color: #6366f1;
+}
+
+/* Improve Date/Time Picker Appearance */
+::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.5);
+    opacity: 0.6;
+    transition: 0.3s;
+}
+
+.dark-mode ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+    transform: scale(1.1);
 }
 
 #add-btn {
@@ -278,26 +316,32 @@ header p {
 /* ===== Filters Settings ===== */
 .filters {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    justify-content: center;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+    justify-content: flex-start;
 }
 
 .filter-btn {
-    padding: 0.6rem 1.5rem;
+    width: 100%;
+    padding: 0.8rem 1.2rem;
     background: var(--item-bg);
     border: 1px solid var(--card-border);
-    border-radius: 20px;
+    border-radius: 12px;
     color: var(--text-secondary);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-align: left;
+    margin-bottom: 0.2rem;
 }
 
 .filter-btn:hover {
     background: rgba(99, 102, 241, 0.1);
     color: #6366f1;
-    transform: scale(1.05);
 }
 
 .filter-btn.active {
@@ -305,6 +349,11 @@ header p {
     color: white;
     border-color: transparent;
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.filter-btn i {
+    width: 20px;
+    text-align: center;
 }
 
 /* ===== Task List ===== */

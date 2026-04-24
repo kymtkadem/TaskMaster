@@ -17,7 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const taskForm = document.getElementById('task-form');
     const taskInput = document.getElementById('task-input');
+    const taskDate = document.getElementById('task-date');
+    const taskTime = document.getElementById('task-time');
     const taskList = document.getElementById('task-list');
+    const listTitle = document.getElementById('list-title');
     const filterBtns = document.querySelectorAll('.filter-btn');
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
@@ -29,9 +32,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentFilter = 'all';
     let unsubscribeTasks = null;
     let unsubscribeUser = null;
-    let userStats = { currentStreak: 0, badges: [] }; // Updated to currentStreak
+    let userStats = { currentStreak: 0, badges: [] };
     let badgeQueue = [];
     let isModalShowing = false;
+
+    // --- Flatpickr Initialization ---
+    const datePicker = flatpickr("#task-date", {
+        dateFormat: "d-m-Y",
+        placeholder: "Due Date",
+        locale: "en",
+        minDate: "today",
+        altInput: false
+    });
+
+    const timePicker = flatpickr("#task-time", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        placeholder: "Time",
+        locale: "en",
+        altInput: false
+    });
 
     // --- Badge Definition ---
     const badgeConfigs = [
@@ -49,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'ex', name: 'Explorer', check: (t, u) => true }
     ];
 
-    // --- Badge Injection & Modal Logic ---
+    // --- Badge Modal Logic ---
     function injectBadgeModal() {
         if (document.getElementById('badge-modal')) return;
         const modalHtml = `
@@ -83,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('badge-modal');
         document.getElementById('modal-badge-name').innerText = badge.name;
         modal.style.display = 'flex';
-        // Confetti Effect (Increased zIndex to stay above modal blur)
         if (window.confetti) {
             window.confetti({
                 particleCount: 150,
@@ -95,12 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Firebase Auth & Logic ---
+    // --- Firebase Auth & Subscription Logic ---
     onAuthStateChanged(auth, (user) => {
         if (user) {
             subscribeToTasks(user.uid);
             subscribeToUserStats(user.uid);
-            setTimeout(() => checkBadge('ex'), 2000);
+            setTimeout(() => checkBadge('ex'), 3000);
         } else {
             if (unsubscribeTasks) unsubscribeTasks();
             if (unsubscribeUser) unsubscribeUser();
@@ -121,13 +142,10 @@ document.addEventListener('DOMContentLoaded', () => {
         unsubscribeUser = onSnapshot(doc(db, "users", userId), (docSnap) => {
             if (docSnap.exists()) {
                 userStats = docSnap.data();
-                
-                // Update Welcome Greeting
                 const greetingElem = document.getElementById('user-greeting');
                 if (greetingElem && userStats.username) {
                     greetingElem.innerHTML = `Welcome, <span style="color: #a855f7;">${userStats.username}</span>! 👋`;
                 }
-
                 checkAllBadges();
             }
         });
@@ -135,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function subscribeToTasks(userId) {
         if (unsubscribeTasks) unsubscribeTasks();
-        // Using subcollection users/{userId}/tasks as seen in the screenshot
         const q = collection(db, "users", userId, "tasks");
         unsubscribeTasks = onSnapshot(q, (snapshot) => {
             tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -149,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Badge Awarding ---
     function checkAllBadges() {
         if (!auth.currentUser) return;
         badgeConfigs.forEach(config => {
@@ -174,6 +192,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (badge && !userStats.badges?.includes(id)) awardBadge(badge);
     }
 
+    // --- Task Rendering & Logic ---
+    function getRelativeTime(datetime) {
+        if (!datetime) return null;
+        const now = new Date();
+        const d = new Date(datetime);
+        const diff = d - now;
+        const absDiff = Math.abs(diff);
+        
+        const minutes = Math.floor(absDiff / 60000);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        
+        let timeStr = "";
+        if (days > 0) timeStr = `${days}d ${hours % 24}h`;
+        else if (hours > 0) timeStr = `${hours}h ${minutes % 60}m`;
+        else timeStr = `${minutes}m`;
+        
+        return { 
+            text: diff < 0 ? `${timeStr} ago` : `in ${timeStr}`, 
+            isOverdue: diff < 0 
+        };
+    }
+
     function renderTasks() {
         if (!taskList) return;
         taskList.innerHTML = '';
@@ -184,30 +225,48 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (currentFilter === 'completed') filteredTasks = tasks.filter(task => task.completed);
 
         if (filteredTasks.length === 0) {
-            const li = document.createElement('li');
-            li.style.textAlign = 'center';
-            li.style.color = 'var(--text-secondary)';
-            li.style.padding = '1rem';
-            li.textContent = "No tasks found.";
-            taskList.appendChild(li);
+            taskList.innerHTML = `
+                <div class="empty-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 300px; text-align: center; opacity: 0.8;">
+                    <div style="width: 100px; height: 100px; background: rgba(99, 102, 241, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                        <i class="fas fa-clipboard-list" style="font-size: 3rem; background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                    </div>
+                    <h3 style="font-size: 1.4rem; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 700;">All caught up!</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); max-width: 250px; margin: 0 auto;">No tasks found in this category.</p>
+                </div>
+            `;
             return;
         }
 
         filteredTasks.forEach(task => {
             const li = document.createElement('li');
-            li.className = `task-item ${task.completed ? 'completed' : ''}`;
+            const relTime = getRelativeTime(task.datetime);
+            const isTaskOverdue = !task.completed && relTime?.isOverdue;
+
+            li.className = `task-item ${task.completed ? 'completed' : ''} ${isTaskOverdue ? 'overdue' : ''}`;
             li.dataset.id = task.id;
+            
             let dateHtml = '';
             if (task.datetime) {
                 const dateObj = new Date(task.datetime);
-                const isOverdue = !task.completed && dateObj <= new Date();
                 const formattedDate = dateObj.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                dateHtml = `<span class="task-date ${isOverdue ? 'overdue-date' : ''}"><i class="far fa-clock"></i> ${formattedDate}${isOverdue ? ' (Overdue)' : ''}</span>`;
+                const badgeClass = isTaskOverdue ? 'overdue' : 'upcoming';
+                dateHtml = `
+                    <div style="margin-top: 0.4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; max-width: 100%;">
+                        <span class="task-date ${isTaskOverdue ? 'overdue-date' : ''}" style="font-size: 0.75rem; max-width: 100%;">
+                            <i class="far fa-calendar-alt"></i> ${formattedDate}
+                        </span>
+                        <span class="deadline-badge ${badgeClass}" style="max-width: 100%;">${relTime.text}</span>
+                    </div>
+                `;
             }
+
             li.innerHTML = `
-                <div class="task-content">
+                <div class="task-content" style="flex: 1; min-width: 0;">
                     <div class="checkbox"><i class="fas fa-check"></i></div>
-                    <span class="task-text">${escapeHTML(task.text)}${dateHtml}</span>
+                    <div style="display: flex; flex-direction: column; min-width: 0; max-width: 100%;">
+                        <span class="task-text" style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">${escapeHTML(task.text)}</span>
+                        ${dateHtml}
+                    </div>
                 </div>
                 <button class="delete-btn" aria-label="Delete Task"><i class="fas fa-trash"></i></button>
             `;
@@ -217,23 +276,57 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function addTask(text, datetime) {
-        if (!auth.currentUser) return;
+    async function addTask(text, date, time) {
+        if (!auth.currentUser) {
+            console.error("No user logged in to add task");
+            return;
+        }
         try {
-            // Updated to use subcollection
+            console.log("Attempting to add task:", { text, date, time });
+            let combinedDt = "";
+            if (date) {
+                // If date is in d-m-Y (Flatpickr format)
+                if (date.includes("-")) {
+                    const parts = date.split("-");
+                    if (parts.length === 3) {
+                        const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                        combinedDt = `${isoDate}T${time || "00:00"}`;
+                    } else {
+                        combinedDt = `${date}T${time || "00:00"}`;
+                    }
+                } else if (date.includes("/")) {
+                     const parts = date.split("/");
+                     if (parts.length === 3) {
+                        const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                        combinedDt = `${isoDate}T${time || "00:00"}`;
+                    }
+                } else {
+                    combinedDt = `${date}T${time || "00:00"}`;
+                }
+            }
+            
             const tasksCol = collection(db, "users", auth.currentUser.uid, "tasks");
-            await addDoc(tasksCol, {
+            const docRef = await addDoc(tasksCol, {
                 text: text,
-                datetime: datetime || "",
+                datetime: combinedDt,
                 completed: false,
                 createdAt: serverTimestamp()
             });
-        } catch (error) { console.error("Error adding task:", error); }
+            console.log("Task added successfully with ID:", docRef.id);
+            
+            // Switch to All Tasks automatically so user sees the new task
+            if (currentFilter !== 'all') {
+                const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+                if (allBtn) allBtn.click();
+            }
+        } catch (error) { 
+            console.error("Error adding task to Firebase:", error);
+            alert("Failed to add task. Please check your internet connection.");
+        }
     }
 
     async function toggleTask(id, completedStatus) {
         try {
-            // Updated to use subcollection
             const taskRef = doc(db, "users", auth.currentUser.uid, "tasks", id);
             await updateDoc(taskRef, { completed: completedStatus });
         } catch (error) { console.error("Error updating task:", error); }
@@ -263,18 +356,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }[tag]));
     }
 
+    // --- Event Listeners ---
     if(taskForm) {
         taskForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const text = taskInput.value.trim();
-            const dtField = document.getElementById('task-datetime');
+            const date = taskDate.value;
+            const time = taskTime.value;
             if (text) {
-                addTask(text, dtField ? dtField.value : "");
+                addTask(text, date, time);
                 taskInput.value = '';
-                if(dtField) dtField.value = '';
+                if (datePicker) datePicker.clear();
+                if (timePicker) timePicker.clear();
             }
         });
     }
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            
+            // Update List Title
+            if (listTitle) {
+                const icon = currentFilter === 'all' ? 'fa-list-ul' : 
+                             currentFilter === 'pending' ? 'fa-clock' : 
+                             currentFilter === 'overdue' ? 'fa-exclamation-circle' : 'fa-check-circle';
+                const titleText = currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1) + " Tasks";
+                listTitle.innerHTML = `<i class="fas ${icon}"></i> ${currentFilter === 'all' ? 'All Tasks' : titleText}`;
+            }
+            
+            renderTasks();
+        });
+    });
 
     if(themeToggle) {
         themeToggle.addEventListener('click', () => {
@@ -284,15 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('theme', isLight ? 'dark' : 'light');
         });
     }
-
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = btn.dataset.filter;
-            renderTasks();
-        });
-    });
 
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark' && themeIcon) {
