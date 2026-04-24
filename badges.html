@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badges - TaskMaster</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .badge-card {
+            background: var(--item-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+        .badge-card.earned {
+            opacity: 1;
+            filter: grayscale(0);
+            border-color: #f59e0b;
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.15);
+            background: linear-gradient(135deg, var(--item-bg) 0%, rgba(245, 158, 11, 0.05) 100%);
+        }
+        .badge-card.earned:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(245, 158, 11, 0.25);
+        }
+        .badge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        .badge-card.earned .badge-icon {
+            color: #f59e0b;
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        }
+        .badge-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 0.3rem;
+            color: var(--text-primary);
+        }
+        .badge-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+        
+        /* Modal for Badge Earned */
+        #badge-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid #f59e0b;
+            padding: 3rem;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(245, 158, 11, 0.3);
+            transform: scale(0.8);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn { 
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-icon {
+            font-size: 5rem;
+            color: #f59e0b;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .close-modal {
+            margin-top: 2rem;
+            padding: 0.8rem 2rem;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-layer-group"></i> TaskMaster
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Tasks</a></li>
+            <li><a href="progress.html">Progress</a></li>
+            <li><a href="badges.html" class="active">Badges</a></li>
+            <li><a href="#" id="logout-btn" style="color: #ef4444; border: 1px solid #ef4444; padding: 0.3rem 1rem; border-radius: 20px;"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
+        </ul>
+        <button id="theme-toggle" aria-label="Toggle Dark Mode">
+            <i class="fas fa-moon"></i>
+        </button>
+    </nav>
+
+    <main class="container" style="max-width: 1000px;">
+        <header style="margin-bottom: 2rem;">
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Your Achievements</h1>
+            <p style="font-size: 1rem; color: var(--text-secondary);">Complete tasks and maintain streaks to unlock exclusive badges.</p>
+        </header>
+
+        <div class="badges-grid" id="badges-container">
+            <!-- Badges will be generated by JS -->
+        </div>
+    </main>
+
+    <div id="badge-modal">
+        <div class="modal-content">
+            <div class="modal-icon"><i class="fas fa-medal"></i></div>
+            <h2 id="modal-badge-name" style="font-size: 1.8rem; margin-bottom: 0.5rem;">New Badge Earned!</h2>
+            <p id="modal-badge-desc" style="color: var(--text-secondary); margin-bottom: 1rem;">Congratulations on your achievement!</p>
+            <button class="close-modal" id="close-modal-btn">Awesome!</button>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        const badgeData = [
+            { id: 't1', icon: 'fa-seedling', name: 'First Steps', req: 'Complete 1 task' },
+            { id: 't5', icon: 'fa-leaf', name: 'Productive', req: 'Complete 5 tasks' },
+            { id: 't10', icon: 'fa-briefcase', name: 'Busy Bee', req: 'Complete 10 tasks' },
+            { id: 't20', icon: 'fa-rocket', name: 'Task Master', req: 'Complete 20 tasks' },
+            { id: 't50', icon: 'fa-trophy', name: 'Overachiever', req: 'Complete 50 tasks' },
+            { id: 'tl', icon: 'fa-crown', name: 'Task Legend', req: 'Complete 100 tasks' },
+            { id: 'eb', icon: 'fa-sun', name: 'Early Bird', req: 'Task before 8 AM' },
+            { id: 'no', icon: 'fa-moon', name: 'Night Owl', req: 'Task after 10 PM' },
+            { id: 'sr', icon: 'fa-bolt', name: 'Speed Runner', req: 'Fast completion' },
+            { id: 'f5', icon: 'fa-star', name: 'Focused', req: '5 tasks in 1 day' },
+            { id: 'm10', icon: 'fa-fire-alt', name: 'Marathon', req: '10 tasks in 1 day' },
+            { id: 'cs', icon: 'fa-broom', name: 'Clean Slate', req: 'Zero pending' },
+            { id: 'ta', icon: 'fa-drafting-table', name: 'Architect', req: '50 total tasks' },
+            { id: 'arc', icon: 'fa-archive', name: 'Archivist', req: '200 total tasks' },
+            { id: 'com', icon: 'fa-check-double', name: 'Completionist', req: 'All tasks done' },
+            
+            { id: 's2', icon: 'fa-running', name: 'Nice Start', req: '2 day streak' },
+            { id: 's3', icon: 'fa-shoe-prints', name: 'Hattrick', req: '3 day streak' },
+            { id: 's7', icon: 'fa-calendar-week', name: 'Warrior', req: '7 day streak' },
+            { id: 's14', icon: 'fa-shield-alt', name: 'Fortnight', req: '14 day streak' },
+            { id: 's21', icon: 'fa-mountain', name: 'Consistent', req: '21 day streak' },
+            { id: 's30', icon: 'fa-medal', name: 'Monthly Medal', req: '30 day streak' },
+            { id: 's60', icon: 'fa-gem', name: 'Unstoppable', req: '60 day streak' },
+            { id: 's90', icon: 'fa-dragon', name: 'Seasoned', req: '90 day streak' },
+            { id: 's100', icon: 'fa-hundred-points', name: 'Centurion', req: '100 day streak' },
+            { id: 's365', icon: 'fa-birthday-cake', name: 'Yearling', req: '365 day streak' },
+            
+            { id: 'dm', icon: 'fa-adjust', name: 'Night Light', req: 'Dark mode' },
+            { id: 'ex', icon: 'fa-map-marked-alt', name: 'Explorer', req: 'Visit all pages' },
+            { id: 'cu', icon: 'fa-calendar-plus', name: 'Customizer', req: 'Set 5 due dates' },
+            { id: 'pu', icon: 'fa-clock', name: 'Punctual', req: '5 early tasks' },
+            { id: 'dd', icon: 'fa-bullseye', name: 'Deadline Dodger', req: 'Perfect timing' }
+        ];
+
+        const container = document.getElementById('badges-container');
+        
+        badgeData.forEach(b => {
+            const card = document.createElement('div');
+            card.className = 'badge-card';
+            card.id = `badge-${b.id}`;
+            card.innerHTML = `
+                <i class="fas ${b.icon} badge-icon"></i>
+                <span class="badge-name">${b.name}</span>
+                <span class="badge-desc">${b.req}</span>
+            `;
+            container.appendChild(card);
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                onSnapshot(doc(db, "users", user.uid), (snap) => {
+                    if (snap.exists()) {
+                        const earned = snap.data().badges || [];
+                        earned.forEach(id => {
+                            const el = document.getElementById(`badge-${id}`);
+                            if (el) el.classList.add('earned');
+                        });
+                    }
+                });
+            }
+        });
+
+        // Close Modal Logic (handles queueing if called from script.js)
+        document.getElementById('close-modal-btn').onclick = () => {
+             document.getElementById('badge-modal').style.display = 'none';
+             window.dispatchEvent(new CustomEvent('badgeModalClosed'));
+        };
+    </script>
+</body>
+</html>

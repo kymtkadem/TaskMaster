@@ -25,7 +25,7 @@
         </header>
 
         <section class="card full-width" style="max-width: 450px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 1.5rem;">
-            <form id="signup-form" style="display: flex; flex-direction: column; gap: 1rem;" onsubmit="event.preventDefault(); localStorage.setItem('currentUser', document.getElementById('email').value); window.location.href='index.html';">
+            <form id="signup-form" style="display: flex; flex-direction: column; gap: 1rem;">
                 
                 <div style="display: flex; flex-direction: column; gap: 0.3rem;">
                     <label for="username" style="font-weight: 500; font-size: 0.9rem;">Username</label>
@@ -46,6 +46,8 @@
                     <i class="fas fa-user-plus"></i> Create Account
                 </button>
                 
+                <p id="error-message" style="color: #ef4444; font-size: 0.85rem; text-align: center; display: none;"></p>
+
                 <p style="text-align: center; color: var(--text-secondary); font-size: 0.95rem; margin-top: 1rem;">
                     Already have an account? <a href="login.html" style="color: #6366f1; text-decoration: none; font-weight: 600;">Log In here</a>
                 </p>
@@ -53,7 +55,25 @@
         </section>
     </main>
 
-    <script src="script.js"></script>
+    <script type="module">
+        import { handleSignUp } from './auth-handler.js';
+        
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('error-message');
+            
+            errorElement.style.display = 'none';
+            
+            const result = await handleSignUp(email, password, username);
+            if (!result.success) {
+                errorElement.textContent = result.error;
+                errorElement.style.display = 'block';
+            }
+        });
+    </script>
     <style>
         #signup-form input:focus {
             outline: none;
