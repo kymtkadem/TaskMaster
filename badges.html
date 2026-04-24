@@ -116,42 +116,42 @@
 
         const badgeData = [
             // Tasks (8)
-            { id: 't1', icon: 'fa-seedling', name: 'First Steps', req: '1 Task', clr: '#fbbf24', rgb: '251, 191, 36' },
-            { id: 't5', icon: 'fa-leaf', name: 'Productive', req: '5 Tasks', clr: '#10b981', rgb: '16, 185, 129' },
-            { id: 't10', icon: 'fa-briefcase', name: 'Busy Bee', req: '10 Tasks', clr: '#3b82f6', rgb: '59, 130, 246' },
-            { id: 't20', icon: 'fa-rocket', name: 'Task Master', req: '20 Tasks', clr: '#8b5cf6', rgb: '139, 92, 246' },
-            { id: 't50', icon: 'fa-trophy', name: 'Overachiever', req: '50 Tasks', clr: '#f59e0b', rgb: '245, 158, 11' },
-            { id: 'tl', icon: 'fa-crown', name: 'Legend', req: '100 Tasks', clr: '#d946ef', rgb: '217, 70, 239' },
-            { id: 'tt', icon: 'fa-gem', name: 'Titan', req: '500 Tasks', clr: '#06b6d4', rgb: '6, 182, 212' },
-            { id: 'tg', icon: 'fa-infinity', name: 'God Mode', req: '1000 Tasks', clr: '#000000', rgb: '0, 0, 0' },
+            { id: 't5', icon: 'fa-seedling', name: 'First Steps', req: '5 Tasks', clr: '#fbbf24', rgb: '251, 191, 36' },
+            { id: 't25', icon: 'fa-leaf', name: 'Productive', req: '25 Tasks', clr: '#10b981', rgb: '16, 185, 129' },
+            { id: 't50', icon: 'fa-briefcase', name: 'Busy Bee', req: '50 Tasks', clr: '#3b82f6', rgb: '59, 130, 246' },
+            { id: 't100', icon: 'fa-rocket', name: 'Task Master', req: '100 Tasks', clr: '#8b5cf6', rgb: '139, 92, 246' },
+            { id: 't250', icon: 'fa-star', name: 'Elite', req: '250 Tasks', clr: '#f59e0b', rgb: '245, 158, 11' },
+            { id: 'tl', icon: 'fa-crown', name: 'Legend', req: '500 Tasks', clr: '#d946ef', rgb: '217, 70, 239' },
+            { id: 'tt', icon: 'fa-gem', name: 'Titan', req: '1000 Tasks', clr: '#06b6d4', rgb: '6, 182, 212' },
+            { id: 'tg', icon: 'fa-infinity', name: 'God Mode', req: '2500 Tasks', clr: '#000000', rgb: '0, 0, 0' },
 
             // Streaks (8)
-            { id: 's2', icon: 'fa-running', name: 'Nice Start', req: '2 Days', clr: '#f97316', rgb: '249, 115, 22' },
-            { id: 's3', icon: 'fa-shoe-prints', name: 'Hattrick', req: '3 Days', clr: '#0ea5e9', rgb: '14, 165, 233' },
-            { id: 's7', icon: 'fa-calendar-week', name: 'Warrior', req: '7 Days', clr: '#ef4444', rgb: '239, 68, 68' },
+            { id: 's3', icon: 'fa-shoe-prints', name: 'Hattrick', req: '3 Day Streak', clr: '#0ea5e9', rgb: '14, 165, 233' },
+            { id: 's7', icon: 'fa-calendar-week', name: 'Warrior', req: '7 Day Streak', clr: '#ef4444', rgb: '239, 68, 68' },
             { id: 's14', icon: 'fa-shield-alt', name: 'Fortnight', req: '14 Days', clr: '#6366f1', rgb: '99, 102, 241' },
             { id: 's21', icon: 'fa-mountain', name: 'Consistent', req: '21 Days', clr: '#14b8a6', rgb: '20, 184, 166' },
             { id: 's30', icon: 'fa-medal', name: 'Monthly', req: '30 Days', clr: '#a855f7', rgb: '168, 85, 247' },
-            { id: 's50', icon: 'fa-fire', name: '50 Streak', req: '50 Days', clr: '#dc2626', rgb: '220, 38, 38' },
+            { id: 's50', icon: 'fa-fire', name: 'Veteran', req: '50 Days', clr: '#dc2626', rgb: '220, 38, 38' },
             { id: 's100', icon: 'fa-dragon', name: 'Centurion', req: '100 Days', clr: '#7c2d12', rgb: '124, 45, 18' },
+            { id: 's365', icon: 'fa-sun', name: 'Immortal', req: '365 Days', clr: '#fcd34d', rgb: '252, 211, 77' },
 
-            // Speed & Skill (7)
-            { id: 'f5', icon: 'fa-star', name: 'Focused', req: '5/Day', clr: '#ec4899', rgb: '236, 72, 153' },
-            { id: 'f10', icon: 'fa-bolt', name: 'Unstoppable', req: '10/Day', clr: '#22c55e', rgb: '34, 197, 94' },
-            { id: 'f20', icon: 'fa-skull', name: 'Beast Mode', req: '20/Day', clr: '#450a0a', rgb: '69, 10, 10' },
-            { id: 'eb', icon: 'fa-sun', name: 'Early Bird', req: 'Before 8AM', clr: '#fcd34d', rgb: '252, 211, 77' },
-            { id: 'no', icon: 'fa-moon', name: 'Night Owl', req: 'After 10PM', clr: '#1e1b4b', rgb: '30, 27, 75' },
-            { id: 'qu', icon: 'fa-stopwatch', name: 'Speed Demon', req: 'Quick', clr: '#71717a', rgb: '113, 113, 122' },
-            { id: 'da', icon: 'fa-bullseye', name: 'Deadline Ace', req: 'Ontime', clr: '#1d4ed8', rgb: '29, 78, 216' },
+            // Performance (7)
+            { id: 'f10', icon: 'fa-bolt', name: 'Focused', req: '10/Day', clr: '#22c55e', rgb: '34, 197, 94' },
+            { id: 'f25', icon: 'fa-skull', name: 'Beast Mode', req: '25/Day', clr: '#450a0a', rgb: '69, 10, 10' },
+            { id: 'eb', icon: 'fa-sun', name: 'Early Bird', req: '50 < 8AM', clr: '#fbbf24', rgb: '251, 191, 36' },
+            { id: 'no', icon: 'fa-moon', name: 'Night Owl', req: '50 > 10PM', clr: '#1e1b4b', rgb: '30, 27, 75' },
+            { id: 'da', icon: 'fa-bullseye', name: 'Deadline Ace', req: '100 OnTime', clr: '#1d4ed8', rgb: '29, 78, 216' },
+            { id: 'pm', icon: 'fa-brain', name: 'Pro Master', req: '98% Rate', clr: '#4f46e5', rgb: '79, 70, 229' },
+            { id: 'qu', icon: 'fa-stopwatch', name: 'Speed Demon', req: '10 Fast', clr: '#71717a', rgb: '113, 113, 122' },
 
-            // Explorer (7)
-            { id: 'ex', icon: 'fa-compass', name: 'Explorer', req: 'Pages', clr: '#475569', rgb: '71, 85, 105' },
-            { id: 'cs', icon: 'fa-broom', name: 'Clean Slate', req: 'Zero Pend', clr: '#059669', rgb: '5, 150, 105' },
-            { id: 'ar', icon: 'fa-box-open', name: 'Archivist', req: '200 Done', clr: '#92400e', rgb: '146, 64, 14' },
-            { id: 'pm', icon: 'fa-brain', name: 'Pro Master', req: '90% Rate', clr: '#4f46e5', rgb: '79, 70, 229' },
-            { id: 'fe', icon: 'fa-magic', name: 'Feature Pro', req: 'Settings', clr: '#db2777', rgb: '219, 39, 119' },
-            { id: 'lo', icon: 'fa-heart', name: 'Loyalty', req: '7 Days Act', clr: '#be123c', rgb: '190, 18, 60' },
-            { id: 'nm', icon: 'fa-user-plus', name: 'New Me', req: 'Start', clr: '#0891b2', rgb: '8, 145, 178' }
+            // Special (7)
+            { id: 'cs', icon: 'fa-broom', name: 'Clean Slate', req: '50 ZeroPend', clr: '#059669', rgb: '5, 150, 105' },
+            { id: 'lo', icon: 'fa-heart', name: 'Loyalty', req: '6 Months', clr: '#be123c', rgb: '190, 18, 60' },
+            { id: 'nm', icon: 'fa-user-plus', name: 'New Me', req: '10 Done', clr: '#0891b2', rgb: '8, 145, 178' },
+            { id: 'ex', icon: 'fa-compass', name: 'Explorer', req: '50 Visits', clr: '#475569', rgb: '71, 85, 105' },
+            { id: 'sh', icon: 'fa-share-alt', name: 'Social Star', req: '10 Shares', clr: '#db2777', rgb: '219, 39, 119' },
+            { id: 'ar', icon: 'fa-box-open', name: 'Archivist', req: '500 Archive', clr: '#92400e', rgb: '146, 64, 14' },
+            { id: 'ha', icon: 'fa-hammer', name: 'Hard Worker', req: '15 Weekend', clr: '#dc2626', rgb: '220, 38, 38' }
         ];
 
         const container = document.getElementById('badges-container');

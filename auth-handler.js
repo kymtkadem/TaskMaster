@@ -10,7 +10,10 @@ import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gst
 // Handle UI redirections based on auth state
 onAuthStateChanged(auth, async (user) => {
     const path = window.location.pathname;
-    const isAuthPage = path.includes('login.html') || path.includes('signup.html');
+    // Handle clean URLs (Vercel) and traditional filenames
+    const isLoginPage = path.endsWith('/login') || path.endsWith('/login.html');
+    const isSignupPage = path.endsWith('/signup') || path.endsWith('/signup.html');
+    const isAuthPage = isLoginPage || isSignupPage;
     
     if (user) {
         // User is signed in
@@ -25,7 +28,17 @@ onAuthStateChanged(auth, async (user) => {
     } else {
         // User is signed out
         localStorage.removeItem('currentUser');
-        if (!isAuthPage && !path.includes('contact.html')) {
+        
+        // Don't redirect from landing, login, signup or contact pages
+        const isLandingPage = path === '/' || path === '/index.html';
+        const isContactPage = path.includes('contact.html') || path.includes('/contact');
+        
+        if (!isAuthPage && !isContactPage && !isLandingPage) {
+            window.location.href = 'login.html';
+        }
+        
+        // If they are on index/root and not logged in, redirect to login
+        if (isLandingPage) {
             window.location.href = 'login.html';
         }
     }
@@ -125,3 +138,13 @@ async function updateStreak(user) {
         console.error("Streak Update Error:", error);
     }
 }
+// Auto-attach logout listener if button exists
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('logout-btn');
+    if (btn) {
+        btn.onclick = async (e) => {
+            e.preventDefault();
+            await handleLogout();
+        };
+    }
+});
